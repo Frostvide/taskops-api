@@ -11,6 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.Map;
+import java.util.List;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,5 +60,28 @@ class TaskServiceTest {
         assertThatThrownBy(() -> service.findById(42L))
                 .isInstanceOf(TaskNotFoundException.class)
                 .hasMessageContaining("42");
+    }
+
+    @Test
+    @DisplayName("countByStatus() renvoie un compteur pour chacun des trois statuts")
+    void countByStatus_couvreTousLesStatuts() {
+        // GIVEN
+        when(repository.findByStatus(TaskStatus.TODO))
+                .thenReturn(List.of(new Task("A", null), new Task("B", null)));
+
+        when(repository.findByStatus(TaskStatus.IN_PROGRESS))
+                .thenReturn(List.of());
+
+        when(repository.findByStatus(TaskStatus.DONE))
+                .thenReturn(List.of(new Task("C", null)));
+
+        // WHEN
+        Map<TaskStatus, Long> compteurs = service.countByStatus();
+
+        // THEN
+        assertThat(compteurs)
+                .containsEntry(TaskStatus.TODO, 2L)
+                .containsEntry(TaskStatus.IN_PROGRESS, 0L)
+                .containsEntry(TaskStatus.DONE, 1L);
     }
 }

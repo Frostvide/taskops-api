@@ -41,7 +41,7 @@ jobs:
       - name: Verifier le contenu de l'artefact
         run: |
           ls -lh target/*.jar
-          unzip -p "target/taskops-api-${VERSION}.jar" BOOT-INF/classes/META-INF/build-info.properties
+          unzip -p "target/taskops-api-${VERSION}.jar" META-INF/build-info.properties
 
       - name: Publier la release GitHub
         env:
